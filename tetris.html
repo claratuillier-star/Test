@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b1c"><title>Neon Tetris</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap');
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:20px 12px;background:radial-gradient(ellipse at 50% 5%,#29204f,transparent 55%),#090b1c;color:#fff;font-family:Rajdhani,sans-serif;display:flex;align-items:center;flex-direction:column}
+h1{font:900 clamp(28px,6vw,46px) Orbitron,sans-serif;letter-spacing:4px;color:#00f5ff;text-shadow:0 0 12px #00d9ff;margin:10px 0 20px}
+a{color:#9dfaff}.layout{display:flex;gap:14px;align-items:flex-start;justify-content:center;flex-wrap:wrap}.panel{background:#151a36;border:1px solid #505a91;border-radius:12px;padding:14px;width:135px;box-shadow:0 0 20px #00d9ff22}
+small{display:block;color:#00f5ff;font:10px Orbitron,sans-serif;letter-spacing:1px}.stat{margin:0 0 16px}.stat strong{font:700 22px Orbitron,sans-serif}#next{width:105px;height:90px}
+.board{position:relative}#board{display:block;width:min(72vw,300px);height:auto;background:#080b20;border:2px solid #5965a6;border-radius:5px;box-shadow:0 0 24px #00d9ff35}
+.overlay{display:none;position:absolute;inset:0;background:#080b20e8;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:16px}.overlay.show{display:flex}.overlay h2{font:700 24px Orbitron,sans-serif;color:#ff36c7;text-shadow:0 0 14px #ff36c7}
+button{border:1px solid #00f5ff;background:#101c3c;color:#fff;border-radius:7px;padding:11px 14px;font:11px Orbitron,sans-serif;cursor:pointer}button:hover{box-shadow:0 0 14px #00f5ff}
+.actions{display:flex;gap:9px;margin-top:14px}.mobile{display:none;grid-template-columns:repeat(3,58px);gap:8px;margin-top:15px}.mobile button{height:46px;font-size:18px;padding:0}.mobile .wide{grid-column:1/4}
+.help{text-align:center;color:#aeb6db;line-height:1.6}
+@media(max-width:520px){.panel{width:min(100%,300px);display:flex;justify-content:space-around;gap:8px}.stat{margin:0;text-align:center}.stat strong{font-size:16px}.preview{display:none}.mobile{display:grid}}
+</style></head>
+<body>
+<h1>NEON TETRIS</h1>
+<p><a href="index.html">← Retour à l'arcade</a></p>
+<div class="layout">
+<aside class="panel">
+<div class="stat"><small>SCORE</small><strong id="score">0</strong></div>
+<div class="stat"><small>RECORD</small><strong id="best">0</strong></div>
+<div class="stat"><small>NIVEAU</small><strong id="level">1</strong></div>
+<div class="stat"><small>LIGNES</small><strong id="lines">0</strong></div>
+<div class="preview"><small>PROCHAINE PIÈCE</small><canvas id="next" width="105" height="90"></canvas></div>
+</aside>
+<div class="board"><canvas id="board" width="300" height="600"></canvas><div class="overlay show" id="overlay"><h2 id="message">NEON TETRIS</h2><p id="sub">Prêt à jouer ?</p><button onclick="start()">JOUER</button></div></div>
+</div>
+<div class="actions"><button onclick="pause()">PAUSE / REPRISE</button><button onclick="start()">RECOMMENCER</button></div>
+<div class="mobile">
+<button onclick="move(-1)">←</button><button onclick="rotate()">↻</button><button onclick="move(1)">→</button>
+<button class="wide" onclick="softDrop()">↓ DESCENDRE</button><button class="wide" onclick="hardDrop()">CHUTE RAPIDE</button>
+</div>
+<p class="help">← → Déplacer · ↑ Tourner · ↓ Descendre · ESPACE Chute rapide · P Pause</p>
+<script>
+const cv=document.getElementById('board'),c=cv.getContext('2d'),nc=document.getElementById('next'),n=nc.getContext('2d');
+const W=10,H=20,S=30,colors=[null,'#00e5ff','#ffe600','#b34dff','#39ff70','#ff3b65','#ff9d32','#4385ff'];
+const forms=[null,[[1,1,1,1]],[[2,2],[2,2]],[[0,3,0],[3,3,3]],[[0,4,4],[4,4,0]],[[5,5,0],[0,5,5]],[[6,0,0],[6,6,6]],[[0,0,7],[7,7,7]]];
+let grid,p,next,score=0,lines=0,level=1,active=false,paused=false,over=false,last=0,acc=0,raf=0;
+let best=Number(localStorage.getItem('neonTetrisBest')||0);document.getElementById('best').textContent=best;
+const fresh=()=>Array.from({length:H},()=>Array(W).fill(0));
+function random(){let id=1+Math.floor(Math.random()*7);return {id,m:forms[id].map(r=>r.slice()),x:3,y:0}}
+function hit(q,dx=0,dy=0,m=q.m){for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++)if(m[y][x]){let X=q.x+x+dx,Y=q.y+y+dy;if(X<0||X>=W||Y>=H||(Y>=0&&grid[Y][X]))return true}return false}
+function overlay(title,sub){document.getElementById('message').textContent=title;document.getElementById('sub').textContent=sub;document.getElementById('overlay').classList.add('show')}
+function hide(){document.getElementById('overlay').classList.remove('show')}
+function stats(){for(let [id,v] of [['score',score],['level',level],['lines',lines]])document.getElementById(id).textContent=v;if(score>best){best=score;localStorage.setItem('neonTetrisBest',best);document.getElementById('best').textContent=best}}
+function start(){cancelAnimationFrame(raf);grid=fresh();score=lines=0;level=1;p=random();next=random();active=true;paused=over=false;last=acc=0;stats();hide();drawNext();draw();raf=requestAnimationFrame(loop)}
+function pause(){if(!active||over)return;paused=!paused;if(paused)overlay('PAUSE','Appuie sur P ou sur PAUSE / REPRISE');else{hide();last=0;raf=requestAnimationFrame(loop)}}
+function drawCell(g,x,y,color,size){g.fillStyle=color;g.fillRect(x*size+1,y*size+1,size-2,size-2);g.fillStyle='#ffffff66';g.fillRect(x*size+3,y*size+3,size-6,3);g.strokeStyle='#ffffff66';g.strokeRect(x*size+1.5,y*size+1.5,size-3,size-3)}
+function draw(){c.fillStyle='#080b20';c.fillRect(0,0,300,600);c.strokeStyle='#ffffff10';for(let x=0;x<=W;x++){c.beginPath();c.moveTo(x*S,0);c.lineTo(x*S,600);c.stroke()}for(let y=0;y<=H;y++){c.beginPath();c.moveTo(0,y*S);c.lineTo(300,y*S);c.stroke()}grid.forEach((r,y)=>r.forEach((v,x)=>{if(v)drawCell(c,x,y,colors[v],S)}));if(!p)return;let gy=p.y;while(!hit({...p,y:gy},0,1))gy++;p.m.forEach((r,y)=>r.forEach((v,x)=>{if(v){c.fillStyle=colors[p.id]+'35';c.fillRect((p.x+x)*S+2,(gy+y)*S+2,S-4,S-4);c.strokeStyle=colors[p.id];c.strokeRect((p.x+x)*S+2,(gy+y)*S+2,S-4,S-4)}}));p.m.forEach((r,y)=>r.forEach((v,x)=>{if(v)drawCell(c,p.x+x,p.y+y,colors[p.id],S)}))}
+function drawNext(){n.clearRect(0,0,105,90);let m=next.m,s=21,ox=(105-m[0].length*s)/2,oy=(90-m.length*s)/2;m.forEach((r,y)=>r.forEach((v,x)=>{if(v){n.fillStyle=colors[next.id];n.fillRect(ox+x*s+1,oy+y*s+1,s-2,s-2)}}))}
+function spawn(){p=next;next=random();drawNext();if(hit(p)){active=false;over=true;overlay('GAME OVER','Score final : '+score)}}
+function lock(){p.m.forEach((r,y)=>r.forEach((v,x)=>{if(v&&p.y+y>=0)grid[p.y+y][p.x+x]=v}));let count=0;for(let y=H-1;y>=0;y--)if(grid[y].every(Boolean)){grid.splice(y,1);grid.unshift(Array(W).fill(0));count++;y++}if(count){score+=([0,100,300,500,800][count]||count*250)*level;lines+=count;level=Math.floor(lines/10)+1;stats()}spawn()}
+function move(d){if(active&&!paused&&!hit(p,d,0)){p.x+=d;draw()}}
+function softDrop(){if(!active||paused)return;if(!hit(p,0,1)){p.y++;score++;stats()}else lock();draw()}
+function hardDrop(){if(!active||paused)return;let d=0;while(!hit(p,0,1)){p.y++;d++}score+=d*2;stats();lock();draw()}
+function rotate(){if(!active||paused)return;let m=p.m[0].map((_,i)=>p.m.map(r=>r[i]).reverse());for(let d of [0,-1,1,-2,2])if(!hit(p,d,0,m)){p.m=m;p.x+=d;break}draw()}
+function loop(t=0){if(!active||paused)return;acc+=t-last;last=t;if(acc>Math.max(90,800-(level-1)*65)){if(!hit(p,0,1))p.y++;else lock();acc=0}draw();if(active&&!paused)raf=requestAnimationFrame(loop)}
+document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowDown','ArrowUp',' '].includes(e.key))e.preventDefault();if(e.key.toLowerCase()==='p')pause();if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1);if(e.key==='ArrowDown')softDrop();if(e.key==='ArrowUp')rotate();if(e.key===' ')hardDrop()});
+drawInitial();function drawInitial(){c.fillStyle='#080b20';c.fillRect(0,0,300,600);for(let y=0;y<H;y++)for(let x=0;x<W;x++){c.strokeStyle='#ffffff10';c.strokeRect(x*S,y*S,S,S)}}
+</script></body></html>
