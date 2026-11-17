@@ -177,3 +177,7 @@ document.querySelectorAll("[data-direction]").forEach(button => {
 
 startButton.addEventListener("click", startGame);
 draw();
+
+let swipeStart=null;
+canvas.addEventListener("touchstart",event=>{if(event.touches.length){const t=event.touches[0];swipeStart={x:t.clientX,y:t.clientY};}},{passive:true});
+canvas.addEventListener("touchend",event=>{if(!swipeStart||!event.changedTouches.length)return;const t=event.changedTouches[0];const dx=t.clientX-swipeStart.x,dy=t.clientY-swipeStart.y;swipeStart=null;if(Math.max(Math.abs(dx),Math.abs(dy))<22)return;if(Math.abs(dx)>Math.abs(dy))setDirection(directions[dx>0?"right":"left"]);else setDirection(directions[dy>0?"down":"up"]);},{passive:true});
