@@ -1,45 +1,26 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101820">
-  <title>Snake Human Eater</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main class="game-shell">
-    <header>
-      <p class="eyebrow">ARCADE SURVIVAL</p>
-      <h1>🐍 SNAKE <span>HUMAN EATER</span></h1>
-      <p class="subtitle">Attrape les humains et fais grandir ton serpent !</p>
-    </header>
-
-    <section class="hud" aria-label="Informations de jeu">
-      <div class="stat"><span class="stat-label">SCORE</span><strong id="score">0</strong></div>
-      <div class="stat"><span class="stat-label">RECORD</span><strong id="best">0</strong></div>
-    </section>
-
-    <div class="board-wrap">
-      <canvas id="game" width="600" height="600" aria-label="Plateau du jeu Snake"></canvas>
-      <div id="overlay" class="overlay">
-        <div class="overlay-card">
-          <div class="overlay-icon">🐍</div>
-          <h2 id="overlay-title">Prêt à jouer ?</h2>
-          <p id="message">Utilise les flèches ou ZQSD pour te déplacer.</p>
-          <button id="start-button" type="button">JOUER</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="controls" aria-label="Commandes">
-      <button class="direction up" data-direction="up" aria-label="Haut">▲</button>
-      <button class="direction left" data-direction="left" aria-label="Gauche">◀</button>
-      <button class="direction down" data-direction="down" aria-label="Bas">▼</button>
-      <button class="direction right" data-direction="right" aria-label="Droite">▶</button>
-    </div>
-    <p class="help">Flèches / ZQSD · Espace pour commencer ou recommencer</p>
-  </main>
-  <script src="game.js"></script>
-</body>
-</html>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b1c"><title>Pixel Palace — Arcade</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#292052 0%,transparent 55%),#090b1c;color:#fff;font-family:Rajdhani,sans-serif;display:flex;justify-content:center;align-items:center;padding:28px 16px}
+main{width:min(920px,100%);text-align:center}.eyebrow{color:#ff43ce;font:700 12px Orbitron,sans-serif;letter-spacing:5px;margin:0 0 12px}
+h1{font:900 clamp(36px,8vw,68px) Orbitron,sans-serif;letter-spacing:3px;margin:0;color:#fff;text-shadow:0 0 12px #00eaff,0 0 35px #8b42ff}
+.intro{font-size:20px;color:#b9c4e8;margin:16px 0 36px}.games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.game{position:relative;overflow:hidden;text-align:left;min-height:280px;padding:26px;border-radius:18px;background:linear-gradient(145deg,#1b2448,#11152e);border:1px solid #505b91;box-shadow:0 12px 40px #0005;transition:transform .2s,border-color .2s}
+.game:hover{transform:translateY(-7px);border-color:#00eaff}.game .emoji{font-size:66px;filter:drop-shadow(0 0 14px currentColor)}.game h2{font:700 24px Orbitron,sans-serif;margin:12px 0}.game p{color:#bdc6e6;font-size:18px;min-height:52px}.game a{display:inline-block;text-decoration:none;font:700 12px Orbitron,sans-serif;letter-spacing:1px;padding:13px 19px;border-radius:8px;color:#071323;background:#00f0ff;box-shadow:0 0 18px #00eaff66}
+.tetris a{background:#ff43ce;color:#21051d;box-shadow:0 0 18px #ff43ce66}.tetris:hover{border-color:#ff43ce}.footer{margin-top:34px;color:#7885ad;font-size:14px}
+@media(max-width:620px){.games{grid-template-columns:1fr}.game{min-height:245px}.intro{margin-bottom:25px}}
+</style></head>
+<body><main>
+<p class="eyebrow">INSERT COIN · PRESS START</p>
+<h1>PIXEL PALACE</h1>
+<p class="intro">Bienvenue dans ta salle d'arcade. Choisis ton jeu !</p>
+<section class="games">
+<article class="game snake"><div class="emoji">🐍</div><h2>SNAKE HUMAN EATER</h2><p>Attrape les humains, grandis et bats ton record dans ce classique revisité.</p><a href="snake.html">JOUER À SNAKE&nbsp; →</a></article>
+<article class="game tetris"><div class="emoji">🧱</div><h2>NEON TETRIS</h2><p>Empile les pièces colorées, complète les lignes et grimpe les niveaux.</p><a href="tetris.html">JOUER À TETRIS&nbsp; →</a></article>
+</section>
+<p class="footer">PIXEL PALACE · ARCADE À JOUER SUR ORDINATEUR ET MOBILE</p>
+</main></body></html>
