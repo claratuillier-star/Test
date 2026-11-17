@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101820">
+  <title>Snake Human Eater</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header>
+      <p class="eyebrow">ARCADE SURVIVAL</p>
+      <h1>🐍 SNAKE <span>HUMAN EATER</span></h1>
+      <p class="subtitle">Attrape les humains et fais grandir ton serpent !</p>
+      <p><a href="index.html" style="color:#8ef7c5">← Retour à l'arcade</a></p>
+    </header>
+    <section class="hud" aria-label="Informations de jeu">
+      <div class="stat"><span class="stat-label">SCORE</span><strong id="score">0</strong></div>
+      <div class="stat"><span class="stat-label">RECORD</span><strong id="best">0</strong></div>
+    </section>
+    <div class="board-wrap">
+      <canvas id="game" width="600" height="600" aria-label="Plateau du jeu Snake"></canvas>
+      <div id="overlay" class="overlay">
+        <div class="overlay-card">
+          <div class="overlay-icon">🐍</div>
+          <h2 id="overlay-title">Prêt à jouer ?</h2>
+          <p id="message">Utilise les flèches ou ZQSD pour te déplacer.</p>
+          <button id="start-button" type="button">JOUER</button>
+        </div>
+      </div>
+    </div>
+    <div class="controls" aria-label="Commandes">
+      <button class="direction up" data-direction="up" aria-label="Haut">▲</button>
+      <button class="direction left" data-direction="left" aria-label="Gauche">◀</button>
+      <button class="direction down" data-direction="down" aria-label="Bas">▼</button>
+      <button class="direction right" data-direction="right" aria-label="Droite">▶</button>
+    </div>
+    <p class="help">Flèches / ZQSD · Espace pour commencer ou recommencer</p>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
